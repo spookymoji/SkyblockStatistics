@@ -43,7 +43,7 @@ public class SkyblockStatistics
 
             }
         }
-        System.out.println(SB_API_KEY);
+
     }
 
     public String getApiKey() {
