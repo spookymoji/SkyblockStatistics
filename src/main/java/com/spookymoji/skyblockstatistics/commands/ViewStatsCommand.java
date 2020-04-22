@@ -21,12 +21,12 @@ public class ViewStatsCommand extends CommandBase {
 
     @Override
     public String getCommandName() {
-        return "stats";
+        return "sbstats";
     }
 
     @Override
     public String getCommandUsage(ICommandSender iCommandSender) {
-        return "stats <username>";
+        return "sbstats <username>";
     }
 
     @Override
@@ -45,7 +45,7 @@ public class ViewStatsCommand extends CommandBase {
             return;
         }
         if(strings.length < 1 || strings.length > 1) {
-            iCommandSender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "[SkyblockStats] Usage is /stats <username>"));
+            iCommandSender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "[SkyblockStats] Usage is /sbstats <username>"));
             return;
         } else {
            //execute user fetching procedure

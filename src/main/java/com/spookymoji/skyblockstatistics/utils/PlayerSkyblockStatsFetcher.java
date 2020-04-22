@@ -28,36 +28,36 @@ public class PlayerSkyblockStatsFetcher {
 
     public Profile getProfileObject() throws IOException {
 
-        Map<String, BigInteger> profileLogins = new HashMap<String, BigInteger>();
+        Map<String, Long> profileLogins = new HashMap<String, Long>();
 
         //Populate hash map with all latest logins to profiles
         for(int i = 0; i < profiles.size(); i++) {
-            JsonObject profileData = this.getProfileMemberData(profiles.get(i));
+            JsonObject profileData = this.getProfileData(profiles.get(i));
             if(profileData != null) {
-                profileLogins.put(profiles.get(i), profileData.get("last_save").getAsBigInteger());
+                profileLogins.put(profiles.get(i), profileData.get("members").getAsJsonObject().get(this.uuid).getAsJsonObject().get("last_save").getAsLong());
             }
         }
 
-        BigInteger max = Collections.max(profileLogins.values());
+        Long max = Collections.max(profileLogins.values());
         String latestProfile = profiles.get(0);
-        for (Map.Entry<String, BigInteger> entry : profileLogins.entrySet()) {
+        for (Map.Entry<String, Long> entry : profileLogins.entrySet()) {
             if (entry.getValue() == max) {
                 latestProfile = entry.getKey();
             }
         }
 
-        Profile profile = this.buildProfile(this.getProfileMemberData(latestProfile));
+        Profile profile = this.buildProfile(this.getProfileData(latestProfile));
 
         return profile;
     }
 
-    private JsonObject getProfileMemberData(String profileId) throws IOException {
+    private JsonObject getProfileData(String profileId) throws IOException {
         
         HTTPClient jsonUtil = new HTTPClient("https://api.hypixel.net/skyblock/profile?key=" + skyblockStatistics.getApiKey() + "&profile=" + profileId);
 
         String data = jsonUtil.getRawResponse();
         JsonParser parser = new JsonParser();
-        JsonObject memberObject = parser.parse(data).getAsJsonObject().get("profile").getAsJsonObject().get("members").getAsJsonObject().get(uuid).getAsJsonObject();
+        JsonObject memberObject = parser.parse(data).getAsJsonObject().get("profile").getAsJsonObject();
         if(memberObject == null) {
             return null;
         }
@@ -69,8 +69,9 @@ public class PlayerSkyblockStatsFetcher {
         //populate generals
         profile.setFairySouls(this.safeIntGet(profileObject, "fairy_souls_collected"));
         profile.setCoins(this.safeLongGet(profileObject, "coin_purse"));
-        profile.setKills(profileObject.get("stats").getAsJsonObject().get("kills").getAsLong());
-        profile.setDeaths(profileObject.get("stats").getAsJsonObject().get("deaths").getAsLong());
+        profile.setBankCoins(this.safeBankBalanceGet(profileObject));
+        profile.setKills(profileObject.get("members").getAsJsonObject().get(uuid).getAsJsonObject().get("stats").getAsJsonObject().get("kills").getAsLong());
+        profile.setDeaths(profileObject.get("members").getAsJsonObject().get(uuid).getAsJsonObject().get("stats").getAsJsonObject().get("deaths").getAsLong());
         profile.setZealotKills(this.safeStatLongGet(profileObject, "kills_zealot_enderman"));
         profile.setHighestCrit(this.safeStatLongGet(profileObject, "highest_critical_damage"));
         //populate skills
@@ -90,26 +91,34 @@ public class PlayerSkyblockStatsFetcher {
     }
 
     private long safeLongGet(JsonObject profileObject, String key) {
-        if(profileObject.get(key) != null) {
-            return profileObject.get(key).getAsLong();
+        if(profileObject.get("members").getAsJsonObject().get(uuid).getAsJsonObject().get(key) != null) {
+            return profileObject.get("members").getAsJsonObject().get(uuid).getAsJsonObject().get(key).getAsLong();
         } else {
             return -1;
         }
     }
 
     private int safeIntGet(JsonObject profileObject, String key) {
-        if(profileObject.get(key) != null) {
-            return profileObject.get(key).getAsInt();
+        if(profileObject.get("members").getAsJsonObject().get(uuid).getAsJsonObject().get(key) != null) {
+            return profileObject.get("members").getAsJsonObject().get(uuid).getAsJsonObject().get(key).getAsInt();
         } else {
             return -1;
         }
     }
 
     private long safeStatLongGet(JsonObject profileObject, String key) {
-        if(profileObject.get("stats").getAsJsonObject().get(key) != null) {
-            return profileObject.get("stats").getAsJsonObject().get(key).getAsLong();
+        if(profileObject.get("members").getAsJsonObject().get(uuid).getAsJsonObject().get("stats").getAsJsonObject().get(key) != null) {
+            return profileObject.get("members").getAsJsonObject().get(uuid).getAsJsonObject().get("stats").getAsJsonObject().get(key).getAsLong();
         } else {
             return 0;
+        }
+    }
+
+    private long safeBankBalanceGet(JsonObject profileObject) {
+        if(profileObject.get("banking") != null) {
+            return profileObject.get("banking").getAsJsonObject().get("balance").getAsLong();
+        } else {
+            return -1;
         }
     }
 

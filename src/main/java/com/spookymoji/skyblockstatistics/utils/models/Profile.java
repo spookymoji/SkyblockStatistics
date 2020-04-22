@@ -6,7 +6,7 @@ public class Profile {
     private String status;
     private String uuid;
 
-    private long coins, combatXp, miningXp, foragingXp, enchantingXp, farmingXp, fishingXp, alchemyXp, kills, deaths, zealotKills, highestCrit, auctionsWon, auctionsHighestBid, auctionsGoldSpent;
+    private long coins, bankCoins, combatXp, miningXp, foragingXp, enchantingXp, farmingXp, fishingXp, alchemyXp, kills, deaths, zealotKills, highestCrit, auctionsWon, auctionsHighestBid, auctionsGoldSpent;
 
     private int fairySouls;
 
@@ -169,9 +169,24 @@ public class Profile {
         this.auctionsGoldSpent = auctionsGoldSpent;
     }
 
+    public long getBankCoins() {
+        return bankCoins;
+    }
+
+    public void setBankCoins(long bankCoins) {
+        this.bankCoins = bankCoins;
+    }
+
+    public float getAverageSkillLevel() {
+        if(this.combatXp < 0)
+            return -1;
+        float avg = (float)(this.getCombatXp()+this.getMiningXp()+this.getForagingXp()+this.getFarmingXp()+this.getFishingXp()+this.getEnchantingXp()+this.getAlchemyXp())/7;
+        return avg;
+    }
+
     private int getSkillLevel(long totalXp) {
 
-        if(totalXp<0)
+        if(totalXp < 0)
             return -1;
 
         long[] skillLevels = {0, 50, 175, 375, 675, 1175, 1925, 2925, 4425, 6425, 9925, 14925, 22425, 32425, 47425, 67425, 97425, 147425, 222425, 322425, 522425, 822425, 1222425, 1722425, 2322425, 3022425, 3822425, 4722425, 5722425, 6822425, 8022425, 9322425, 10722425, 12222425, 13822425, 15522425, 17322425, 19222425, 21222425, 23322425, 25522425, 27822425, 30222425, 32722425, 35322425, 38072425, 40972425, 44072425, 47472425, 51172425, 55172425};

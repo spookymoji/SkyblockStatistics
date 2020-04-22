@@ -29,12 +29,17 @@ public class PlayerChatDisplay {
 
         sender.addChatMessage(new ChatComponentText("Total Kills: " + EnumChatFormatting.GREEN + "" + EnumChatFormatting.BOLD + profile.getKills()));
         sender.addChatMessage(new ChatComponentText("Total Deaths: " + EnumChatFormatting.RED + "" + EnumChatFormatting.BOLD + profile.getDeaths()));
-        sender.addChatMessage(new ChatComponentText("Purse Coins: " + EnumChatFormatting.GOLD + "" + EnumChatFormatting.BOLD + String.format("%,d", profile.getCoins())));
+        if(profile.getBankCoins()<0) {
+            sender.addChatMessage(new ChatComponentText("Purse Coins: " + EnumChatFormatting.GOLD + "" + EnumChatFormatting.BOLD + String.format("%,d", profile.getCoins())));
+        } else {
+            sender.addChatMessage(new ChatComponentText("Purse Coins: " + EnumChatFormatting.GOLD + "" + EnumChatFormatting.BOLD + String.format("%,d", profile.getCoins()) + EnumChatFormatting.WHITE + " Bank Balance: " + EnumChatFormatting.GOLD + "" + EnumChatFormatting.BOLD + String.format("%,d", profile.getBankCoins())));
+        }
 
-        sender.addChatMessage(new ChatComponentText(EnumChatFormatting.LIGHT_PURPLE + "" + EnumChatFormatting.BOLD + "Skills"));
         if(profile.getCombatXp() < 0) {
+            sender.addChatMessage(new ChatComponentText(EnumChatFormatting.LIGHT_PURPLE + "" + EnumChatFormatting.BOLD + "Skills"));
             sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Skills API not enabled"));
         } else {
+            sender.addChatMessage(new ChatComponentText(EnumChatFormatting.LIGHT_PURPLE + "" + EnumChatFormatting.BOLD + "Skills ( Average " + String.format("%.2f", profile.getAverageSkillLevel()) + " )"));
             sender.addChatMessage(new ChatComponentText("Combat: " + this.displaySkillLevel(profile.getCombatXp())));
             sender.addChatMessage(new ChatComponentText("Mining: " + this.displaySkillLevel(profile.getMiningXp())));
             sender.addChatMessage(new ChatComponentText("Foraging: " + this.displaySkillLevel(profile.getForagingXp())));

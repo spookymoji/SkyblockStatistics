@@ -34,7 +34,6 @@ public class PlayerFetcherThread implements Runnable{
     private String getPlayerUUID(String name) throws IOException {
 
         HTTPClient jsonUtil = new HTTPClient("https://api.mojang.com/users/profiles/minecraft/" + name);
-
         String data = jsonUtil.getRawResponse();
         Map<String, Object> jsonMap;
         Gson gson = new Gson();

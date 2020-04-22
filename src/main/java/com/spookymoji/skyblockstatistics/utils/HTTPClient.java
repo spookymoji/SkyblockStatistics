@@ -19,17 +19,30 @@ public class HTTPClient {
     }
 
     public String getRawResponse() throws IOException {
+
         HttpURLConnection httpClient =
                 (HttpURLConnection) new URL(this.url).openConnection();
-        httpClient.setRequestMethod("GET");
-        int status = httpClient.getResponseCode();
+        try {
+            httpClient.setRequestMethod("GET");
+            int status = httpClient.getResponseCode();
+        } catch(IOException e) {
+            httpClient.disconnect();
+        }
         BufferedReader br = new BufferedReader(new InputStreamReader(httpClient.getInputStream()));
+
         StringBuilder sb = new StringBuilder();
         String line;
-        while ((line = br.readLine()) != null) {
-            sb.append(line+"\n");
+        try {
+            while ((line = br.readLine()) != null) {
+                sb.append(line+"\n");
+            }
+        } catch (IOException e) {
+            br.close();
         }
+
         br.close();
+        httpClient.disconnect();
+
         return sb.toString();
     }
 }
